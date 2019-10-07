@@ -3,16 +3,17 @@ const axios = require('axios');
 const fs = require('fs');
 const {promisify} = require('util');
 
+
 const app = express();
 app.use(express.json());
 
 const readFileAsync = promisify(fs.readFile);
 
 let check = req => {
-  console.log(`hostname: ${req.hostname}, ip: ${req.ip}, method: ${req.method}`);
+  console.log(`hostname: ${req.hostname}, ip: ${req.headers['x-forwarded-for']}, method: ${req.method}, name: ${req.params.nameId}`);
 }
 
-app.get('/check', (req, res) => {
+app.get('/check/:nameId', (req, res) => {
   check(req);
   res.end()
 });
@@ -77,12 +78,13 @@ app.get('/fonsecapi/:estrofaId', (req, res) => {
   .catch(res.send)
 });
 
-const hostname = '127.0.0.1';
+const hostname = "127.0.0.1";
 const port = 3000;
+const name = "LUIS"; // acá hay que poner su nombre
 
 app.listen(port, () => {
-  axios.get('http://itba-check.duckdns.com/check')
+  axios.get(`http://itba-check.duckdns.org/check/${name}`)
   .then(() => {})
-  .catch(() => {})
+  .catch(console.log)
   console.log(`Serving running at http://${hostname}:${port}/`);
 });
