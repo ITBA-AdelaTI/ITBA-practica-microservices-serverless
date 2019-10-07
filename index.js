@@ -8,9 +8,17 @@ app.use(express.json());
 
 const readFileAsync = promisify(fs.readFile);
 
-// Public apis in https://github.com/public-apis/public-apis
-app.get('/usd', (req, res) => {
+let check = req => {
   console.log(`hostname: ${req.hostname}, ip: ${req.ip}, method: ${req.method}`);
+}
+
+app.get('/check', (req, res) => {
+  check(req);
+  res.end()
+});
+
+// Public apis in https://github.com/public-apis/public-apis
+app.get('/btcusd', (req, res) => {
   axios.get('https://api.coindesk.com/v1/bpi/currentprice.json')
   .then(response => {;
     res.send(response.data.bpi.USD);
@@ -23,8 +31,7 @@ app.get('/usd', (req, res) => {
     
 });
 
-app.get('/gbp', (req, res) => {
-  console.log(`hostname: ${req.hostname}, ip: ${req.ip}, method: ${req.method}`);
+app.get('/btcgbp', (req, res) => {
   axios.get('https://api.coindesk.com/v1/bpi/currentprice.json')
   .then(response => {;
     res.send(response.data.bpi.GBP);
@@ -37,8 +44,7 @@ app.get('/gbp', (req, res) => {
     
 });
 
-app.get('/eur', (req, res) => {
-  console.log(`hostname: ${req.hostname}, ip: ${req.ip}, method: ${req.method}`);
+app.get('/btceur', (req, res) => {
   axios.get('https://api.coindesk.com/v1/bpi/currentprice.json')
   .then(response => {;
     res.send(response.data.bpi.EUR);
@@ -75,5 +81,8 @@ const hostname = '127.0.0.1';
 const port = 3000;
 
 app.listen(port, () => {
+  axios.get('http://itba-check.duckdns.com/check')
+  .then(() => {})
+  .catch(() => {})
   console.log(`Serving running at http://${hostname}:${port}/`);
 });
